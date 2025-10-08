@@ -7,8 +7,8 @@ import (
 )
 
 const (
-	constCantFilasTablero    = 25
-	constCantColumnasTablero = 29
+	constCantFilasTablero    = 30
+	constCantColumnasTablero = 30
 
 	constCantColumnas = 2
 	constY            = 0
@@ -147,7 +147,8 @@ func generarEventos() {
 func generarTablero() [constCantFilasTablero][constCantColumnasTablero]string {
 	var tablero [constCantFilasTablero][constCantColumnasTablero]string
 
-	//PROGRAMAR
+	//Nota: Cambie las constantes de la cantidad de filas y columnas a 30 cada una para que de un tablero cuadrado.
+
 	for f := 0; f < constCantFilasTablero; f++ {
 		for c := 0; c < constCantColumnasTablero; c++ {
 			// Bordes en X
@@ -175,20 +176,22 @@ func inicializarNave(cantFilasTablero int, cantColumnasTablero int) ([constCantC
 
 func inicializarOvnis(cantFilasTablero int, cantColumnasTablero int) [][constCantColumnasOvni]int {
 	var (
-		ovnis [][constCantColumnasOvni]int
+		ovnis    [][constCantColumnasOvni]int
+		vecovnis [constCantColumnasOvni]int // Se inicializa el vector OVNIS
 	)
-	for f := 1; f <= 3; f++ {
-		for c := 2; c < cantColumnasTablero-2; c += 2 {
-			ovni := [constCantColumnasOvni]int{
-				constTipoOvni:   0,
-				constOvniY:      f,
-				constOvniX:      c,
-				constEnDescenso: 0,
-			}
-			ovnis = append(ovnis, ovni)
+	rand.Seed(time.Now().Unix()) // Inicializacion de rand para el Tipo de ovni
+
+	for y := 5; y < cantFilasTablero-20; y++ {
+		for x := 2; x < cantColumnasTablero-2; x++ {
+
+			vecovnis[0] = rand.Intn(2) + 1 // En esta variable se guarda el Tipo de ovni generado de forma aleatoria
+			vecovnis[1] = y                // En vecovnis sub 1 se guarda la variable Y que corresponde a su posición en la fila del tablero
+			vecovnis[2] = x                // En vecovnis sub 2 se guarda la variable X que corresponde a su posicion en la columna del tablero
+			vecovnis[3] = 0                // En vecovnis sub 3 se indica que el ovni NO esta en caída (al generar los ovnis los mismos siempre estan en standby)
+
+			ovnis = append(ovnis, vecovnis) // Acá se integra el vector ovnis al slice de ovnis
 		}
 	}
-	//PROGRAMAR
 
 	return ovnis
 }
@@ -258,19 +261,10 @@ func calcularNuevaPosicionNave(tablero [constCantFilasTablero][constCantColumnas
 	nuevax = nave[constX] + direccionNave[constX]
 	nuevay = nave[constY] + direccionNave[constY]
 
-	if nuevax >= 0 && nuevax < constCantFilasTablero && nuevay >= 0 && nuevay < constCantColumnasTablero {
-
-		if tablero[nuevax][nuevay] != constSimboloBorde {
-			nave[constX] = nuevax
-			nave[constY] = nuevay
-		} else {
-
-			*direccionNave = quieto
-
-		}
+	if tablero[nuevax][nuevay] != constSimboloBorde {
+		nave[constX] = nuevax
+		nave[constY] = nuevay
 	}
-
-	//PROGRAMAR
 
 }
 
@@ -329,7 +323,10 @@ func eliminarOvni(slice [][constCantColumnasOvni]int, coordenadaY int, coordenad
 }
 
 func liberarOvni(ovnis [][constCantColumnasOvni]int) {
-	//PROGRAMAR
+
+	indiceovni := rand.Intn(len(ovnis))    // Acá se elige un ovni al azar de los que esten en el Slices ovnis y se pasa como indice
+	ovnis[indiceovni][constEnDescenso] = 1 // En esta parte se coloca en el slice
+
 }
 
 func calcularNuevaPosicionOvnisLiberados(ovnis [][constCantColumnasOvni]int) {
